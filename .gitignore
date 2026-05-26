@@ -1,0 +1,28 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+dist-ssr/
+*.tsbuildinfo
+
+# env
+.env
+.env.local
+.env.*.local
+
+# logs
+*.log
+npm-debug.log*
+
+# editor / OS
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# 디자인 참조 전용 (저장소에 포함하지 않음)
+kdn-main/
+
+# 점검/조치 쉘 스크립트 (내부 기관 정보 포함 — 공개 저장소 미포함)
+security_vuln_*.sh

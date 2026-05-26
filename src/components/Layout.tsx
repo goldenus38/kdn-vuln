@@ -1,0 +1,93 @@
+import { useState } from 'react'
+import { NavLink, useLocation } from 'react-router-dom'
+import { useTheme } from '../contexts/ThemeContext'
+import { useAuth } from '../contexts/AuthContext'
+import { db } from '../lib/db'
+
+const NAV = [
+  { to: '/', icon: 'fa-gauge-high', label: '대시보드', end: true },
+  { to: '/assets', icon: 'fa-server', label: '자산 관리' },
+  { to: '/scans', icon: 'fa-file-csv', label: '점검 결과' },
+  { to: '/vulnerabilities', icon: 'fa-shield-halved', label: '취약점 현황' },
+  { to: '/items', icon: 'fa-list-check', label: '점검 항목 (U-01~67)' },
+]
+
+const TITLES: Record<string, string> = {
+  '/': '대시보드',
+  '/assets': '자산 관리',
+  '/scans': '점검 결과',
+  '/vulnerabilities': '취약점 현황',
+  '/items': '점검 항목 기준',
+}
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+  const { theme, toggle } = useTheme()
+  const { user, logout } = useAuth()
+  const { pathname } = useLocation()
+  const [open, setOpen] = useState(false)
+
+  const baseKey = '/' + (pathname.split('/')[1] || '')
+  const title = TITLES[baseKey === '/' ? '/' : baseKey] ?? '취약점 진단 관리'
+
+  return (
+    <div className="app-shell">
+      {open && <div className="sidebar-backdrop" onClick={() => setOpen(false)} />}
+      <aside className={`sidebar ${open ? 'open' : ''}`}>
+        <div className="sidebar-brand">
+          <i className="fa-solid fa-shield-halved" />
+          <div>
+            KDN-VULN
+            <span className="brand-sub">취약점 진단 관리</span>
+          </div>
+        </div>
+        <nav className="sidebar-nav">
+          <div className="sidebar-section-label">메뉴</div>
+          {NAV.map((n) => (
+            <NavLink
+              key={n.to}
+              to={n.to}
+              end={n.end}
+              className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+              onClick={() => setOpen(false)}
+            >
+              <i className={`fa-solid ${n.icon}`} />
+              {n.label}
+            </NavLink>
+          ))}
+        </nav>
+        <div className="sidebar-footer">
+          주요정보통신기반시설<br />보안상세가이드 2025.12<br />Unix U-01 ~ U-67
+        </div>
+      </aside>
+
+      <div className="main-area">
+        {db.mode() === 'local' && (
+          <div className="mode-banner">
+            <i className="fa-solid fa-circle-info" /> 로컬 미리보기 모드 — 데이터가 브라우저에만 저장됩니다. Supabase 연결 시 자동 전환됩니다.
+          </div>
+        )}
+        <header className="topbar">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <button className="icon-btn sidebar-toggle" onClick={() => setOpen((o) => !o)} aria-label="메뉴">
+              <i className="fa-solid fa-bars" />
+            </button>
+            <span className="topbar-title">{title}</span>
+          </div>
+          <div className="topbar-actions">
+            <button className="icon-btn" onClick={toggle} aria-label="테마 전환">
+              <i className={`fa-solid ${theme === 'dark' ? 'fa-sun' : 'fa-moon'}`} />
+            </button>
+            <div className="topbar-user">
+              <span className="user-avatar">{(user?.email?.[0] ?? 'A').toUpperCase()}</span>
+              <span className="hide-sm">{user?.email}</span>
+            </div>
+            <button className="icon-btn" onClick={logout} aria-label="로그아웃" title="로그아웃">
+              <i className="fa-solid fa-right-from-bracket" />
+            </button>
+          </div>
+        </header>
+        <main className="page-content">{children}</main>
+      </div>
+    </div>
+  )
+}

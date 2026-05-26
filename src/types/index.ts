@@ -1,0 +1,75 @@
+// ============================================
+// KDN-VULN 도메인 타입
+// 주요정보통신기반시설 보안상세가이드(2025.12) - Unix 서버
+// ============================================
+
+/** 점검 결과 코드: Y=양호, N=취약, C=수동확인 */
+export type CheckResult = 'Y' | 'N' | 'C'
+
+/** 중요도 (KISA 가이드 상/중/하) */
+export type Severity = '상' | '중' | '하'
+
+/** 점검 분야 */
+export type Category = '계정관리' | '파일및디렉터리관리' | '서비스관리' | '패치관리' | '로그관리'
+
+/** U-01 ~ U-67 점검 항목 마스터 */
+export interface CheckItem {
+  code: string            // 'U-01'
+  name: string            // 'root 계정 원격 접속 제한'
+  category: Category
+  severity: Severity
+  manualOnly: boolean     // 수동확인 항목 여부
+}
+
+/** 자산(점검 대상 서버) */
+export interface Asset {
+  id: string
+  hostname: string
+  ip: string
+  osType: string          // CentOS / Rocky / Ubuntu ...
+  osVersion: string
+  department: string      // 소속/부서
+  owner: string           // 담당자
+  location: string        // 위치/구역
+  note: string
+  createdAt: string
+}
+
+/** CSV 한 줄 = 점검 항목 1건의 결과 */
+export interface ScanResultRow {
+  checkItem: string       // 'U-01'
+  result: CheckResult     // Y/N/C
+  detail: string          // check_detail
+  message: string         // 항목 설명
+  eventTime: string
+}
+
+/** 점검 세션 1건 (= CSV 파일 1개) */
+export interface Scan {
+  id: string
+  assetId: string | null  // 매칭된 자산 (없으면 미등록 호스트)
+  hostname: string        // CSV 의 host_name
+  scanDate: string        // event_time (점검 일시)
+  fileName: string
+  uploadedAt: string
+  uploadedBy: string
+  total: number
+  vulnCount: number       // N 개수
+  goodCount: number       // Y 개수
+  manualCount: number     // C 개수
+  score: number           // 양호율 = Y / (Y+N) * 100 (C 제외)
+  results: ScanResultRow[]
+}
+
+/** CSV 파싱 결과 */
+export interface ParsedCsv {
+  hostname: string
+  scanDate: string
+  rows: ScanResultRow[]
+}
+
+export interface Toast {
+  id: string
+  type: 'info' | 'success' | 'error'
+  message: string
+}
