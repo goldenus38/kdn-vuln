@@ -5,8 +5,10 @@ import type { Notice, NoticeCategory } from '../types'
 import { useToast } from '../contexts/ToastContext'
 import { NoticeCategoryBadge, Spinner, EmptyState, fmtDate } from '../components/ui'
 import NoticeModal, { emptyDraft, type NoticeDraft } from '../components/NoticeModal'
+import Pagination from '../components/Pagination'
 
 const CATS: NoticeCategory[] = ['긴급', '점검일정', '패치권고', '정책', '일반']
+const PAGE_SIZE = 10
 
 export default function Notices() {
   const { notify } = useToast()
@@ -15,6 +17,7 @@ export default function Notices() {
   const [loading, setLoading] = useState(true)
   const [q, setQ] = useState('')
   const [cat, setCat] = useState('ALL')
+  const [page, setPage] = useState(1)
   const [draft, setDraft] = useState<NoticeDraft | null>(null)
   const [saving, setSaving] = useState(false)
 
@@ -36,6 +39,14 @@ export default function Notices() {
       return true
     })
   }, [notices, q, cat])
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+  const pageItems = useMemo(
+    () => filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    [filtered, page],
+  )
+  // 검색/필터 변경 시 1페이지로
+  useEffect(() => { setPage(1) }, [q, cat])
 
   async function save() {
     if (!draft) return
@@ -81,7 +92,7 @@ export default function Notices() {
                 <tr><th style={{ width: 96 }}>분류</th><th>제목</th><th style={{ width: 110 }}>작성자</th><th style={{ width: 140 }}>작성일</th><th className="col-center" style={{ width: 70 }}>조회</th></tr>
               </thead>
               <tbody>
-                {filtered.map((n) => (
+                {pageItems.map((n) => (
                   <tr key={n.id} className="clickable notice-row" onClick={() => nav(`/notices/${n.id}`)}>
                     <td><NoticeCategoryBadge category={n.category} /></td>
                     <td className="nt-title">{n.pinned && <i className="fa-solid fa-thumbtack pin" title="고정" />}{n.title}</td>
@@ -92,6 +103,7 @@ export default function Notices() {
                 ))}
               </tbody>
             </table>
+            <Pagination page={page} totalPages={totalPages} onChange={setPage} />
           </div>
         )}
       </div>

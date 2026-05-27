@@ -251,6 +251,17 @@ html[data-theme="dark"] .progress { background: var(--surface-2); }
 .dropzone .dz-title { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
 .dropzone .dz-sub { font-size: 12.5px; }
 
+/* ── Pagination ── */
+.pagination { display: flex; gap: 4px; justify-content: center; padding: 16px; }
+.pg-btn {
+    min-width: 34px; height: 34px; padding: 0 8px; border: 1px solid var(--border);
+    background: var(--surface); color: var(--text-secondary); border-radius: var(--radius-sm);
+    font-size: 13px; font-weight: 600; transition: var(--transition-base);
+}
+.pg-btn:hover:not(:disabled):not(.active) { border-color: var(--border-strong); color: var(--text-primary); }
+.pg-btn.active { background: var(--kdn-red); border-color: var(--kdn-red); color: #fff; }
+.pg-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
 /* ── Empty / loading states ── */
 .empty-state { text-align: center; padding: 56px 20px; color: var(--text-light); }
 .empty-state i { font-size: 38px; margin-bottom: 14px; opacity: 0.4; }
