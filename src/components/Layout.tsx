@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
-import { useTheme } from '../contexts/ThemeContext'
+import { useTheme, PALETTES } from '../contexts/ThemeContext'
 import { useAuth } from '../contexts/AuthContext'
 import { db } from '../lib/db'
 
@@ -32,10 +32,11 @@ const TITLES: Record<string, string> = {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const { theme, toggle } = useTheme()
+  const { theme, toggle, color, setColor } = useTheme()
   const { user, logout } = useAuth()
   const { pathname } = useLocation()
   const [open, setOpen] = useState(false)
+  const [paletteOpen, setPaletteOpen] = useState(false)
 
   const baseKey = '/' + (pathname.split('/')[1] || '')
   const title = TITLES[baseKey === '/' ? '/' : baseKey] ?? '취약점 진단 관리'
@@ -100,6 +101,32 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <span className="topbar-title">{title}</span>
           </div>
           <div className="topbar-actions">
+            <div className="palette-wrap">
+              <button className="icon-btn" onClick={() => setPaletteOpen((o) => !o)} aria-label="컬러 팔레트" title="컬러 팔레트">
+                <i className="fa-solid fa-palette" />
+              </button>
+              {paletteOpen && (
+                <>
+                  <div className="palette-backdrop" onClick={() => setPaletteOpen(false)} />
+                  <div className="palette-popover">
+                    <div className="palette-title">컬러 팔레트</div>
+                    <div className="palette-grid">
+                      {PALETTES.map((p) => (
+                        <button
+                          key={p.key}
+                          className={`palette-swatch ${color === p.key ? 'active' : ''}`}
+                          onClick={() => { setColor(p.key); setPaletteOpen(false) }}
+                          title={p.label}
+                        >
+                          <span className="sw-dot" style={{ background: p.color }}>{color === p.key && <i className="fa-solid fa-check" />}</span>
+                          <span className="sw-label">{p.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
             <button className="icon-btn" onClick={toggle} aria-label="테마 전환">
               <i className={`fa-solid ${theme === 'dark' ? 'fa-sun' : 'fa-moon'}`} />
             </button>

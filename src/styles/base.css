@@ -80,6 +80,14 @@
     --transition-base: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* ── 컬러 팔레트 (data-color) ── 버튼(--primary)·강조색(--kdn-red) 전환. 의미색은 유지 */
+/* 기본(data-color="kdn" 또는 미지정): navy 버튼 + KDN 레드 강조 (:root 값) */
+html[data-color="navy"]   { --primary: #1B2A4A; --primary-dark: #0F1B33; --kdn-red: #1B2A4A; --kdn-red-dark: #0F1B33; }
+html[data-color="blue"]   { --primary: #2563EB; --primary-dark: #1D4ED8; --kdn-red: #2563EB; --kdn-red-dark: #1D4ED8; }
+html[data-color="green"]  { --primary: #00855A; --primary-dark: #005C3E; --kdn-red: #00855A; --kdn-red-dark: #005C3E; }
+html[data-color="purple"] { --primary: #7C3AED; --primary-dark: #5B21B6; --kdn-red: #7C3AED; --kdn-red-dark: #5B21B6; }
+html[data-color="orange"] { --primary: #D4760A; --primary-dark: #8A4E00; --kdn-red: #D4760A; --kdn-red-dark: #8A4E00; }
+
 /* ── Dark mode ── */
 html[data-theme="dark"] {
     --bg: #0A1428;
