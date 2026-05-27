@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { db } from '../lib/db'
+import { db, latestScanPerAsset } from '../lib/db'
 import type { Asset, Scan } from '../types'
 import { parseScanCsv, aggregate, CsvParseError } from '../lib/csvParser'
 import { useToast } from '../contexts/ToastContext'
@@ -14,6 +14,7 @@ export default function Scans() {
   const [drag, setDrag] = useState(false)
   const [busy, setBusy] = useState(false)
   const [q, setQ] = useState('')
+  const [view, setView] = useState<'latest' | 'all'>('latest')
   const fileRef = useRef<HTMLInputElement>(null)
 
   async function load() {
@@ -68,18 +69,22 @@ export default function Scans() {
     await load()
   }
 
+  const base = useMemo(
+    () => (view === 'latest' ? latestScanPerAsset(scans) : scans),
+    [scans, view],
+  )
   const filtered = useMemo(() => {
     const k = q.trim().toLowerCase()
-    if (!k) return scans
-    return scans.filter((s) => s.hostname.toLowerCase().includes(k) || s.fileName.toLowerCase().includes(k))
-  }, [scans, q])
+    if (!k) return base
+    return base.filter((s) => s.hostname.toLowerCase().includes(k) || s.fileName.toLowerCase().includes(k))
+  }, [base, q])
 
   if (loading) return <Spinner />
 
   return (
     <>
       <div className="page-head">
-        <div><h1>점검 결과</h1><div className="page-sub">점검 CSV 업로드 및 이력 관리 · 총 {scans.length}건</div></div>
+        <div><h1>점검 결과</h1><div className="page-sub">점검 CSV 업로드 및 이력 관리 · 자산별 최신 {latestScanPerAsset(scans).length}건 / 전체 {scans.length}건</div></div>
       </div>
 
       <div
@@ -101,6 +106,10 @@ export default function Scans() {
         <div className="search-input">
           <i className="fa-solid fa-magnifying-glass" />
           <input placeholder="호스트명·파일명 검색" value={q} onChange={(e) => setQ(e.target.value)} />
+        </div>
+        <div className="seg">
+          <button className={view === 'latest' ? 'active' : ''} onClick={() => setView('latest')}>자산별 최신</button>
+          <button className={view === 'all' ? 'active' : ''} onClick={() => setView('all')}>전체 이력</button>
         </div>
       </div>
 
