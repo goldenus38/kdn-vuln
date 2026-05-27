@@ -4,7 +4,7 @@
 // 호스팅 확정 후 .env 채우고 supabase/schema.sql 적용하면 자동으로 Supabase 사용.
 // ============================================
 
-import type { Asset, FixRun, Notice, Scan, Threat } from '../types'
+import type { Asset, FixRun, Notice, Resource, Scan, Threat } from '../types'
 import { supabase, isSupabaseMode } from './supabase'
 
 const LS_ASSETS = 'kdnvuln_assets'
@@ -12,6 +12,8 @@ const LS_SCANS = 'kdnvuln_scans'
 const LS_FIXES = 'kdnvuln_fixes'
 const LS_NOTICES = 'kdnvuln_notices'
 const LS_THREATS = 'kdnvuln_threats'
+const LS_RESOURCES = 'kdnvuln_resources'
+const RESOURCE_BUCKET = 'resources'
 
 function uid(): string {
   return (crypto.randomUUID?.() ?? `id-${Date.now()}-${Math.random().toString(36).slice(2)}`)
@@ -101,6 +103,21 @@ function threatToRow(t: Partial<Threat>) {
     title: t.title, cve: t.cve, severity: t.severity, source: t.source, source_url: t.sourceUrl,
     published_date: t.publishedDate, tags: t.tags, related_items: t.relatedItems,
     body: t.body, author: t.author, updated_at: new Date().toISOString(),
+  }
+}
+function resourceFromRow(r: any): Resource {
+  return {
+    id: r.id, category: r.category, title: r.title, description: r.description ?? '',
+    fileName: r.file_name ?? '', filePath: r.file_path ?? '', fileUrl: r.file_url ?? '',
+    fileSize: r.file_size ?? 0, mime: r.mime ?? '', author: r.author ?? '',
+    downloads: r.downloads ?? 0, createdAt: r.created_at, updatedAt: r.updated_at,
+  }
+}
+function resourceToRow(r: Partial<Resource>) {
+  return {
+    category: r.category, title: r.title, description: r.description, file_name: r.fileName,
+    file_path: r.filePath, file_url: r.fileUrl, file_size: r.fileSize, mime: r.mime,
+    author: r.author, updated_at: new Date().toISOString(),
   }
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
@@ -380,6 +397,82 @@ export const db = {
     const all = lsRead<Threat>(LS_THREATS)
     const idx = all.findIndex((t) => t.id === id)
     if (idx >= 0) { all[idx].views = current + 1; lsWrite(LS_THREATS, all) }
+  },
+
+  // ============================================
+  // Resources (자료실) — Supabase Storage 연동
+  // ============================================
+  async listResources(): Promise<Resource[]> {
+    if (supabase) {
+      const { data, error } = await supabase.from('resources').select('*').order('created_at', { ascending: false })
+      if (error) throw error
+      return (data ?? []).map(resourceFromRow)
+    }
+    return lsRead<Resource>(LS_RESOURCES).sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+  },
+
+  async getResource(id: string): Promise<Resource | null> {
+    if (supabase) {
+      const { data, error } = await supabase.from('resources').select('*').eq('id', id).maybeSingle()
+      if (error) throw error
+      return data ? resourceFromRow(data) : null
+    }
+    return lsRead<Resource>(LS_RESOURCES).find((r) => r.id === id) ?? null
+  },
+
+  /** 파일 업로드 → { filePath, fileUrl }. Supabase: Storage 버킷 / 로컬: data URL */
+  async uploadResourceFile(file: File): Promise<{ filePath: string; fileUrl: string }> {
+    if (supabase) {
+      const safe = file.name.replace(/[^\w.\-]/g, '_')
+      const path = `${uid()}-${safe}`
+      const { error } = await supabase.storage.from(RESOURCE_BUCKET).upload(path, file, {
+        cacheControl: '3600', upsert: false, contentType: file.type || undefined,
+      })
+      if (error) throw error
+      const { data } = supabase.storage.from(RESOURCE_BUCKET).getPublicUrl(path)
+      return { filePath: path, fileUrl: data.publicUrl }
+    }
+    const fileUrl = await new Promise<string>((res, rej) => {
+      const r = new FileReader()
+      r.onload = () => res(r.result as string)
+      r.onerror = () => rej(new Error('파일 읽기 실패'))
+      r.readAsDataURL(file)
+    })
+    return { filePath: '', fileUrl }
+  },
+
+  async createResource(input: Omit<Resource, 'id' | 'downloads' | 'createdAt' | 'updatedAt'>): Promise<Resource> {
+    if (supabase) {
+      const { data, error } = await supabase.from('resources').insert(resourceToRow(input)).select().single()
+      if (error) throw error
+      return resourceFromRow(data)
+    }
+    const now = new Date().toISOString()
+    const r: Resource = { ...input, id: uid(), downloads: 0, createdAt: now, updatedAt: now }
+    const all = lsRead<Resource>(LS_RESOURCES)
+    all.push(r)
+    lsWrite(LS_RESOURCES, all)
+    return r
+  },
+
+  async deleteResource(r: Resource): Promise<void> {
+    if (supabase) {
+      if (r.filePath) await supabase.storage.from(RESOURCE_BUCKET).remove([r.filePath]).catch(() => {})
+      const { error } = await supabase.from('resources').delete().eq('id', r.id)
+      if (error) throw error
+      return
+    }
+    lsWrite(LS_RESOURCES, lsRead<Resource>(LS_RESOURCES).filter((x) => x.id !== r.id))
+  },
+
+  async bumpResourceDownloads(id: string, current: number): Promise<void> {
+    if (supabase) {
+      await supabase.from('resources').update({ downloads: current + 1 }).eq('id', id)
+      return
+    }
+    const all = lsRead<Resource>(LS_RESOURCES)
+    const idx = all.findIndex((x) => x.id === id)
+    if (idx >= 0) { all[idx].downloads = current + 1; lsWrite(LS_RESOURCES, all) }
   },
 }
 

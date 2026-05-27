@@ -75,6 +75,28 @@ export function Spinner() {
   return <div className="center-loading"><div className="loading-spinner" /></div>
 }
 
+/** 바이트 → 사람이 읽는 크기 */
+export function fmtBytes(n: number): string {
+  if (!n) return '-'
+  const u = ['B', 'KB', 'MB', 'GB']
+  let i = 0; let v = n
+  while (v >= 1024 && i < u.length - 1) { v /= 1024; i++ }
+  return `${Math.round(v * 10) / 10} ${u[i]}`
+}
+
+/** 파일명/MIME → FontAwesome 아이콘 클래스 */
+export function fileIcon(name: string, mime = ''): string {
+  const ext = name.split('.').pop()?.toLowerCase() ?? ''
+  if (mime.includes('pdf') || ext === 'pdf') return 'fa-file-pdf'
+  if (['xls', 'xlsx', 'csv'].includes(ext) || mime.includes('sheet') || mime.includes('excel')) return 'fa-file-excel'
+  if (['doc', 'docx'].includes(ext) || mime.includes('word')) return 'fa-file-word'
+  if (['sh', 'bash', 'py', 'js', 'ts'].includes(ext)) return 'fa-file-code'
+  if (['zip', 'tar', 'gz', '7z'].includes(ext)) return 'fa-file-zipper'
+  if (['png', 'jpg', 'jpeg', 'gif', 'svg'].includes(ext) || mime.startsWith('image/')) return 'fa-file-image'
+  if (['txt', 'md', 'log'].includes(ext)) return 'fa-file-lines'
+  return 'fa-file'
+}
+
 /** ISO/문자열 일시를 'YYYY-MM-DD HH:MM' 으로 */
 export function fmtDate(s: string): string {
   if (!s) return '-'

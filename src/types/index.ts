@@ -147,6 +147,25 @@ export interface Threat {
   updatedAt: string
 }
 
+// ── 자료실 게시판 ──
+export type ResourceCategory = '점검스크립트' | '가이드' | '체크리스트' | '조치매뉴얼' | '기타'
+
+export interface Resource {
+  id: string
+  category: ResourceCategory
+  title: string
+  description: string
+  fileName: string
+  filePath: string      // Supabase Storage object path ('' = 로컬 data URL)
+  fileUrl: string        // 공개 URL 또는 data URL
+  fileSize: number
+  mime: string
+  author: string
+  downloads: number
+  createdAt: string
+  updatedAt: string
+}
+
 export interface Toast {
   id: string
   type: 'info' | 'success' | 'error'

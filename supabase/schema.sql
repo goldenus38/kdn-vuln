@@ -94,14 +94,38 @@ create table if not exists public.threats (
 );
 create index if not exists idx_threats_created on public.threats (created_at desc);
 
+-- ── 자료실 게시판 (파일은 Storage 'resources' 버킷) ──
+create table if not exists public.resources (
+  id          uuid primary key default gen_random_uuid(),
+  category    text not null default '가이드',  -- 점검스크립트/가이드/체크리스트/조치매뉴얼/기타
+  title       text not null,
+  description text default '',
+  file_name   text default '',
+  file_path   text default '',   -- Storage object path
+  file_url    text default '',   -- 공개 URL
+  file_size   bigint default 0,
+  mime        text default '',
+  author      text default '관리자',
+  downloads   int not null default 0,
+  created_at  timestamptz not null default now(),
+  updated_at  timestamptz not null default now()
+);
+create index if not exists idx_resources_created on public.resources (created_at desc);
+
+-- Storage 버킷(공개) — 파일 다운로드는 공개 URL로
+insert into storage.buckets (id, name, public)
+values ('resources', 'resources', true)
+on conflict (id) do nothing;
+
 -- ============================================================
 -- RLS: 인증된 사용자(로그인한 운영자)만 접근 허용
 -- ============================================================
 alter table public.assets  enable row level security;
 alter table public.scans   enable row level security;
 alter table public.fixes   enable row level security;
-alter table public.notices enable row level security;
-alter table public.threats enable row level security;
+alter table public.notices   enable row level security;
+alter table public.threats   enable row level security;
+alter table public.resources enable row level security;
 
 drop policy if exists "auth full access - assets" on public.assets;
 create policy "auth full access - assets" on public.assets
@@ -122,6 +146,21 @@ create policy "auth full access - notices" on public.notices
 drop policy if exists "auth full access - threats" on public.threats;
 create policy "auth full access - threats" on public.threats
   for all to authenticated using (true) with check (true);
+
+drop policy if exists "auth full access - resources" on public.resources;
+create policy "auth full access - resources" on public.resources
+  for all to authenticated using (true) with check (true);
+
+-- Storage 'resources' 버킷 접근 정책 (인증 사용자: 업로드/삭제, 공개: 다운로드)
+drop policy if exists "resources storage read" on storage.objects;
+create policy "resources storage read" on storage.objects
+  for select using (bucket_id = 'resources');
+drop policy if exists "resources storage write" on storage.objects;
+create policy "resources storage write" on storage.objects
+  for insert to authenticated with check (bucket_id = 'resources');
+drop policy if exists "resources storage delete" on storage.objects;
+create policy "resources storage delete" on storage.objects
+  for delete to authenticated using (bucket_id = 'resources');
 
 -- 운영자 계정 생성: Supabase 대시보드 > Authentication > Users > Add user
 -- (이메일/비밀번호) 로 추가하면 프런트 로그인에 사용됩니다.
