@@ -34,11 +34,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       {open && <div className="sidebar-backdrop" onClick={() => setOpen(false)} />}
       <aside className={`sidebar ${open ? 'open' : ''}`}>
         <div className="sidebar-brand">
-          <i className="fa-solid fa-shield-halved" />
-          <div>
-            KDN-VULN
+          <span className="brand-logo-chip">
+            <img src={`${import.meta.env.BASE_URL}kdn-symbol.png`} alt="KDN" />
+          </span>
+          <span className="brand-text">
+            <span className="brand-name">KDN-VULN</span>
             <span className="brand-sub">취약점 진단 관리</span>
-          </div>
+          </span>
         </div>
         <nav className="sidebar-nav">
           <div className="sidebar-section-label">메뉴</div>
@@ -77,13 +79,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <button className="icon-btn" onClick={toggle} aria-label="테마 전환">
               <i className={`fa-solid ${theme === 'dark' ? 'fa-sun' : 'fa-moon'}`} />
             </button>
-            <div className="topbar-user">
-              <span className="user-avatar">{(user?.email?.[0] ?? 'A').toUpperCase()}</span>
-              <span className="hide-sm">{user?.email}</span>
-            </div>
-            <button className="icon-btn" onClick={logout} aria-label="로그아웃" title="로그아웃">
-              <i className="fa-solid fa-right-from-bracket" />
-            </button>
+            {user && (
+              <>
+                <div className="topbar-user">
+                  <span className="user-avatar">{(user.email?.[0] ?? 'A').toUpperCase()}</span>
+                  <span className="hide-sm">{user.email}</span>
+                </div>
+                <button className="icon-btn" onClick={logout} aria-label="로그아웃" title="로그아웃">
+                  <i className="fa-solid fa-right-from-bracket" />
+                </button>
+              </>
+            )}
           </div>
         </header>
         <main className="page-content">{children}</main>

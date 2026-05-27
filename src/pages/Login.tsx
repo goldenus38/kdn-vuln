@@ -3,8 +3,9 @@ import { useAuth, isSupabaseMode, LOCAL_ADMIN } from '../contexts/AuthContext'
 
 export default function Login() {
   const { login } = useAuth()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  // 테스트 사이트: 로컬 모드에서는 기본 계정을 미리 채워 로그인 버튼만 누르면 진입
+  const [email, setEmail] = useState(isSupabaseMode() ? '' : LOCAL_ADMIN.email)
+  const [password, setPassword] = useState(isSupabaseMode() ? '' : LOCAL_ADMIN.password)
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
 

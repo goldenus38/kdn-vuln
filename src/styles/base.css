@@ -32,6 +32,13 @@
     --primary-light: #3D6FE0;
     --accent: #3D6FE0;
 
+    /* KDN 심볼 브랜드 컬러 (red/gray/orange) */
+    --kdn-red: #E2231A;
+    --kdn-red-dark: #B81812;
+    --kdn-red-soft: #FCE9E8;
+    --kdn-orange: #F39800;
+    --kdn-gray: #9FA0A0;
+
     /* Status colors (취약점 등급/결과) */
     --status-vuln: #C8102E;        /* 취약 (N) */
     --status-vuln-bg: #FDECEE;
@@ -86,6 +93,7 @@ html[data-theme="dark"] {
     --status-vuln-bg: #2E1015;
     --status-good-bg: #0A2E1E;
     --status-manual-bg: #2E2210;
+    --kdn-red-soft: #3A1413;
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
     --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
     --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.4);

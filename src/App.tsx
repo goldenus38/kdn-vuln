@@ -1,10 +1,8 @@
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { ToastProvider } from './contexts/ToastContext'
-import { AuthProvider, useAuth } from './contexts/AuthContext'
-import { Spinner } from './components/ui'
+import { AuthProvider } from './contexts/AuthContext'
 import Layout from './components/Layout'
-import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Assets from './pages/Assets'
 import Scans from './pages/Scans'
@@ -12,10 +10,9 @@ import ScanDetail from './pages/ScanDetail'
 import Vulnerabilities from './pages/Vulnerabilities'
 import CheckItems from './pages/CheckItems'
 
-function Protected() {
-  const { user, loading } = useAuth()
-  if (loading) return <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center' }}><Spinner /></div>
-  if (!user) return <Login />
+// 로그인 비활성화 (임시) — 인증 게이트 없이 바로 진입
+// 다시 켜려면 user 체크 후 <Login /> 반환하도록 복구 (Login.tsx 보존됨)
+function AppRoutes() {
   return (
     <Layout>
       <Routes>
@@ -37,7 +34,7 @@ export default function App() {
       <AuthProvider>
         <ToastProvider>
           <HashRouter>
-            <Protected />
+            <AppRoutes />
           </HashRouter>
         </ToastProvider>
       </AuthProvider>
