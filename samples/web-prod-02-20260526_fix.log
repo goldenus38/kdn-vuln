@@ -1,0 +1,216 @@
+============================================================
+[2026-05-26 04:50:00] Fix session started
+OS: Rocky 8.10, Host: web-prod-02
+Items: all
+============================================================
+[2026-05-26 04:50:02] [FIX] U-01: root 계정 원격 접속 제한
+[2026-05-26 04:50:02]   [SKIP] Already compliant
+[2026-05-26 04:50:02]   [RESULT] FIXED
+[2026-05-26 04:50:03] [FIX] U-02: 비밀번호 관리정책 설정
+[2026-05-26 04:50:03]   [SKIP] Already compliant
+[2026-05-26 04:50:03]   [RESULT] FIXED
+[2026-05-26 04:50:04] [FIX] U-03: 계정 잠금 임계값 설정
+[2026-05-26 04:50:04]   [SKIP] Already compliant
+[2026-05-26 04:50:04]   [RESULT] FIXED
+[2026-05-26 04:50:05] [FIX] U-04: 비밀번호 파일 보호
+[2026-05-26 04:50:05]   [ACTION] Applied remediation for U-04
+[2026-05-26 04:50:05]   [RESULT] FIXED
+[2026-05-26 04:50:06] [FIX] U-05: root 이외의 UID 0 금지
+[2026-05-26 04:50:06]   [REPORT] Findings reported (manual decision required)
+[2026-05-26 04:50:06]   [RESULT] REPORTED (manual action required)
+[2026-05-26 04:50:07] [FIX] U-06: root 계정 su 제한
+[2026-05-26 04:50:07]   [ACTION] Applied remediation for U-06
+[2026-05-26 04:50:07]   [RESULT] FIXED
+[2026-05-26 04:50:08] [FIX] U-07: 불필요한 계정 제거
+[2026-05-26 04:50:08]   [MANUAL] Manual review required — operator action needed
+[2026-05-26 04:50:08]   [RESULT] MANUAL CHECK - Review U-07
+[2026-05-26 04:50:09] [FIX] U-08: 관리자 그룹에 최소한의 계정 포함
+[2026-05-26 04:50:09]   [REPORT] Findings reported (manual decision required)
+[2026-05-26 04:50:09]   [RESULT] REPORTED (manual action required)
+[2026-05-26 04:50:10] [FIX] U-09: 계정이 존재하지 않는 GID 금지
+[2026-05-26 04:50:10]   [MANUAL] Manual review required — operator action needed
+[2026-05-26 04:50:10]   [RESULT] MANUAL CHECK - Review U-09
+[2026-05-26 04:50:11] [FIX] U-10: 동일한 UID 금지
+[2026-05-26 04:50:11]   [REPORT] Findings reported (manual decision required)
+[2026-05-26 04:50:11]   [RESULT] REPORTED (manual action required)
+[2026-05-26 04:50:12] [FIX] U-11: 사용자 Shell 점검
+[2026-05-26 04:50:12]   [ACTION] Applied remediation for U-11
+[2026-05-26 04:50:12]   [RESULT] FIXED
+[2026-05-26 04:50:13] [FIX] U-12: 세션 종료 시간 설정
+[2026-05-26 04:50:13]   [ACTION] Applied remediation for U-12
+[2026-05-26 04:50:13]   [RESULT] FIXED
+[2026-05-26 04:50:14] [FIX] U-13: 안전한 비밀번호 암호화 알고리즘 사용
+[2026-05-26 04:50:14]   [BACKUP] /etc/login.defs -> ...bak.20260526
+[2026-05-26 04:50:14]   [ACTION] Set ENCRYPT_METHOD SHA512
+[2026-05-26 04:50:14]   [RESULT] FIXED
+[2026-05-26 04:50:15] [FIX] U-14: root 홈 패스 디렉터리 권한 및 패스 설정
+[2026-05-26 04:50:15]   [SKIP] Already compliant
+[2026-05-26 04:50:15]   [RESULT] FIXED
+[2026-05-26 04:50:16] [FIX] U-15: 파일 및 디렉터리 소유자 설정
+[2026-05-26 04:50:16]   [BACKUP] target -> target.bak.20260526
+[2026-05-26 04:50:16]   [ACTION] Adjusted owner/permission per policy
+[2026-05-26 04:50:16]   [RESULT] FIXED
+[2026-05-26 04:50:17] [FIX] U-16: /etc/passwd 파일 소유자 및 권한 설정
+[2026-05-26 04:50:17]   [SKIP] Already compliant
+[2026-05-26 04:50:17]   [RESULT] FIXED
+[2026-05-26 04:50:18] [FIX] U-17: 시스템 시작 스크립트 권한 설정
+[2026-05-26 04:50:18]   [SKIP] Already compliant
+[2026-05-26 04:50:18]   [RESULT] FIXED
+[2026-05-26 04:50:19] [FIX] U-18: /etc/shadow 파일 소유자 및 권한 설정
+[2026-05-26 04:50:19]   [ACTION] chown root /etc/shadow
+[2026-05-26 04:50:19]   [ACTION] chmod 0400 /etc/shadow
+[2026-05-26 04:50:19]   [RESULT] FIXED
+[2026-05-26 04:50:20] [FIX] U-19: /etc/hosts 파일 소유자 및 권한 설정
+[2026-05-26 04:50:20]   [SKIP] Already compliant
+[2026-05-26 04:50:20]   [RESULT] FIXED
+[2026-05-26 04:50:21] [FIX] U-20: /etc/(x)inetd.conf 파일 소유자 및 권한 설정
+[2026-05-26 04:50:21]   [SKIP] Already compliant
+[2026-05-26 04:50:21]   [RESULT] FIXED
+[2026-05-26 04:50:22] [FIX] U-21: /etc/(r)syslog.conf 파일 소유자 및 권한 설정
+[2026-05-26 04:50:22]   [SKIP] Already compliant
+[2026-05-26 04:50:22]   [RESULT] FIXED
+[2026-05-26 04:50:23] [FIX] U-22: /etc/services 파일 소유자 및 권한 설정
+[2026-05-26 04:50:23]   [SKIP] Already compliant
+[2026-05-26 04:50:23]   [RESULT] FIXED
+[2026-05-26 04:50:24] [FIX] U-23: SUID SGID Sticky bit 설정 파일 점검
+[2026-05-26 04:50:24]   [MANUAL] Manual review required — operator action needed
+[2026-05-26 04:50:24]   [RESULT] MANUAL CHECK - Review U-23
+[2026-05-26 04:50:25] [FIX] U-24: 사용자 시스템 환경변수 파일 소유자 및 권한 설정
+[2026-05-26 04:50:25]   [BACKUP] target -> target.bak.20260526
+[2026-05-26 04:50:25]   [ACTION] Adjusted owner/permission per policy
+[2026-05-26 04:50:25]   [RESULT] FIXED
+[2026-05-26 04:50:26] [FIX] U-25: world writable 파일 점검
+[2026-05-26 04:50:26]   [MANUAL] Manual review required — operator action needed
+[2026-05-26 04:50:26]   [RESULT] MANUAL CHECK - Review U-25
+[2026-05-26 04:50:27] [FIX] U-26: /dev에 존재하지 않는 device 파일 점검
+[2026-05-26 04:50:27]   [REPORT] Findings reported (manual decision required)
+[2026-05-26 04:50:27]   [RESULT] REPORTED (manual action required)
+[2026-05-26 04:50:28] [FIX] U-27: .rhosts hosts.equiv 사용 금지
+[2026-05-26 04:50:28]   [BACKUP] target -> target.bak.20260526
+[2026-05-26 04:50:28]   [ACTION] Adjusted owner/permission per policy
+[2026-05-26 04:50:28]   [RESULT] FIXED
+[2026-05-26 04:50:29] [FIX] U-28: 접속 IP 및 포트 제한
+[2026-05-26 04:50:29]   [MANUAL] Manual review required — operator action needed
+[2026-05-26 04:50:29]   [RESULT] MANUAL CHECK - Review U-28
+[2026-05-26 04:50:30] [FIX] U-29: hosts.lpd 파일 소유자 및 권한 설정
+[2026-05-26 04:50:30]   [SKIP] Already compliant
+[2026-05-26 04:50:30]   [RESULT] FIXED
+[2026-05-26 04:50:31] [FIX] U-30: UMASK 설정 관리
+[2026-05-26 04:50:31]   [SKIP] Already compliant
+[2026-05-26 04:50:31]   [RESULT] FIXED
+[2026-05-26 04:50:32] [FIX] U-31: 홈 디렉터리 소유자 및 권한 설정
+[2026-05-26 04:50:32]   [BACKUP] target -> target.bak.20260526
+[2026-05-26 04:50:32]   [ACTION] Adjusted owner/permission per policy
+[2026-05-26 04:50:32]   [RESULT] FIXED
+[2026-05-26 04:50:33] [FIX] U-32: 홈 디렉터리로 지정한 디렉터리의 존재 관리
+[2026-05-26 04:50:33]   [BACKUP] target -> target.bak.20260526
+[2026-05-26 04:50:33]   [ACTION] Adjusted owner/permission per policy
+[2026-05-26 04:50:33]   [RESULT] FIXED
+[2026-05-26 04:50:34] [FIX] U-33: 숨겨진 파일 및 디렉터리 검색 및 제거
+[2026-05-26 04:50:34]   [MANUAL] Manual review required — operator action needed
+[2026-05-26 04:50:34]   [RESULT] MANUAL CHECK - Review U-33
+[2026-05-26 04:50:35] [FIX] U-34: Finger 서비스 비활성화
+[2026-05-26 04:50:35]   [SKIP] Already compliant
+[2026-05-26 04:50:35]   [RESULT] FIXED
+[2026-05-26 04:50:36] [FIX] U-35: 공유 서비스에 대한 익명 접근 제한
+[2026-05-26 04:50:36]   [ACTION] systemctl stop && disable (공유 서비스에 대한 익명 접근 제한)
+[2026-05-26 04:50:36]   [RESULT] FIXED
+[2026-05-26 04:50:37] [FIX] U-36: r 계열 서비스 비활성화
+[2026-05-26 04:50:37]   [SKIP] Already compliant
+[2026-05-26 04:50:37]   [RESULT] FIXED
+[2026-05-26 04:50:38] [FIX] U-37: crontab 설정파일 권한 설정
+[2026-05-26 04:50:38]   [ACTION] systemctl stop && disable (crontab 설정파일 권한 설정)
+[2026-05-26 04:50:38]   [RESULT] FIXED
+[2026-05-26 04:50:39] [FIX] U-38: DoS 공격에 취약한 서비스 비활성화
+[2026-05-26 04:50:39]   [ACTION] systemctl stop && disable (DoS 공격에 취약한 서비스 비활성화)
+[2026-05-26 04:50:39]   [RESULT] FIXED
+[2026-05-26 04:50:40] [FIX] U-39: 불필요한 NFS 서비스 비활성화
+[2026-05-26 04:50:40]   [SKIP] Already compliant
+[2026-05-26 04:50:40]   [RESULT] FIXED
+[2026-05-26 04:50:41] [FIX] U-40: NFS 접근 통제
+[2026-05-26 04:50:41]   [ACTION] systemctl stop && disable (NFS 접근 통제)
+[2026-05-26 04:50:41]   [RESULT] FIXED
+[2026-05-26 04:50:42] [FIX] U-41: 불필요한 automountd 제거
+[2026-05-26 04:50:42]   [ACTION] systemctl stop && disable (불필요한 automountd 제거)
+[2026-05-26 04:50:42]   [RESULT] FIXED
+[2026-05-26 04:50:43] [FIX] U-42: 불필요한 RPC 서비스 비활성화
+[2026-05-26 04:50:43]   [SKIP] Already compliant
+[2026-05-26 04:50:43]   [RESULT] FIXED
+[2026-05-26 04:50:44] [FIX] U-43: NIS NIS+ 점검
+[2026-05-26 04:50:44]   [ACTION] systemctl stop && disable (NIS NIS+ 점검)
+[2026-05-26 04:50:44]   [RESULT] FIXED
+[2026-05-26 04:50:45] [FIX] U-44: tftp talk 서비스 비활성화
+[2026-05-26 04:50:45]   [ACTION] systemctl stop && disable tftp talk
+[2026-05-26 04:50:45]   [RESULT] FIXED
+[2026-05-26 04:50:46] [FIX] U-45: 메일 서비스 버전 점검
+[2026-05-26 04:50:46]   [MANUAL] Manual review required — operator action needed
+[2026-05-26 04:50:46]   [RESULT] MANUAL CHECK - Review U-45
+[2026-05-26 04:50:47] [FIX] U-46: 일반 사용자의 메일 서비스 실행 방지
+[2026-05-26 04:50:47]   [ACTION] systemctl stop && disable (일반 사용자의 메일 서비스 실행 방지)
+[2026-05-26 04:50:47]   [RESULT] FIXED
+[2026-05-26 04:50:48] [FIX] U-47: 스팸 메일 릴레이 제한
+[2026-05-26 04:50:48]   [SKIP] Already compliant
+[2026-05-26 04:50:48]   [RESULT] FIXED
+[2026-05-26 04:50:49] [FIX] U-48: expn vrfy 명령어 제한
+[2026-05-26 04:50:49]   [ACTION] systemctl stop && disable (expn vrfy 명령어 제한)
+[2026-05-26 04:50:49]   [RESULT] FIXED
+[2026-05-26 04:50:50] [FIX] U-49: DNS 보안 버전 패치
+[2026-05-26 04:50:50]   [MANUAL] Manual review required — operator action needed
+[2026-05-26 04:50:50]   [RESULT] MANUAL CHECK - Review U-49
+[2026-05-26 04:50:51] [FIX] U-50: DNS Zone Transfer 설정
+[2026-05-26 04:50:51]   [ACTION] systemctl stop && disable (DNS Zone Transfer 설정)
+[2026-05-26 04:50:51]   [RESULT] FIXED
+[2026-05-26 04:50:52] [FIX] U-51: DNS 동적 업데이트 설정 금지
+[2026-05-26 04:50:52]   [ACTION] systemctl stop && disable (DNS 동적 업데이트 설정 금지)
+[2026-05-26 04:50:52]   [RESULT] FIXED
+[2026-05-26 04:50:53] [FIX] U-52: Telnet 서비스 비활성화
+[2026-05-26 04:50:53]   [SKIP] Already compliant
+[2026-05-26 04:50:53]   [RESULT] FIXED
+[2026-05-26 04:50:54] [FIX] U-53: FTP 서비스 정보 노출 제한
+[2026-05-26 04:50:54]   [ACTION] systemctl stop && disable (FTP 서비스 정보 노출 제한)
+[2026-05-26 04:50:54]   [RESULT] FIXED
+[2026-05-26 04:50:55] [FIX] U-54: 암호화되지 않는 FTP 서비스 비활성화
+[2026-05-26 04:50:55]   [SKIP] Already compliant
+[2026-05-26 04:50:55]   [RESULT] FIXED
+[2026-05-26 04:50:56] [FIX] U-55: FTP 계정 Shell 제한
+[2026-05-26 04:50:56]   [SKIP] Already compliant
+[2026-05-26 04:50:56]   [RESULT] FIXED
+[2026-05-26 04:50:57] [FIX] U-56: FTP 서비스 접근 제어 설정
+[2026-05-26 04:50:57]   [SKIP] Already compliant
+[2026-05-26 04:50:57]   [RESULT] FIXED
+[2026-05-26 04:50:58] [FIX] U-57: Ftpusers 파일 설정
+[2026-05-26 04:50:58]   [ACTION] systemctl stop && disable (Ftpusers 파일 설정)
+[2026-05-26 04:50:58]   [RESULT] FIXED
+[2026-05-26 04:50:59] [FIX] U-58: 불필요한 SNMP 서비스 구동 점검
+[2026-05-26 04:50:59]   [ACTION] systemctl stop && disable (불필요한 SNMP 서비스 구동 점검)
+[2026-05-26 04:50:59]   [RESULT] FIXED
+[2026-05-26 04:51:00] [FIX] U-59: 안전한 SNMP 버전 사용
+[2026-05-26 04:51:00]   [SKIP] Already compliant
+[2026-05-26 04:51:00]   [RESULT] FIXED
+[2026-05-26 04:51:01] [FIX] U-60: SNMP Community String 복잡성 설정
+[2026-05-26 04:51:01]   [ACTION] systemctl stop && disable (SNMP Community String 복잡성 설정)
+[2026-05-26 04:51:01]   [RESULT] FIXED
+[2026-05-26 04:51:02] [FIX] U-61: SNMP Access Control 설정
+[2026-05-26 04:51:02]   [SKIP] Already compliant
+[2026-05-26 04:51:02]   [RESULT] FIXED
+[2026-05-26 04:51:03] [FIX] U-62: 로그인 시 경고 메시지 설정
+[2026-05-26 04:51:03]   [ACTION] systemctl stop && disable (로그인 시 경고 메시지 설정)
+[2026-05-26 04:51:03]   [RESULT] FIXED
+[2026-05-26 04:51:04] [FIX] U-63: sudo 명령어 접근 관리
+[2026-05-26 04:51:04]   [SKIP] Already compliant
+[2026-05-26 04:51:04]   [RESULT] FIXED
+[2026-05-26 04:51:05] [FIX] U-64: 주기적 보안 패치 및 벤더 권고사항 적용
+[2026-05-26 04:51:05]   [MANUAL] Manual review required — operator action needed
+[2026-05-26 04:51:05]   [RESULT] MANUAL CHECK - Review U-64
+[2026-05-26 04:51:06] [FIX] U-65: NTP 및 시각 동기화 설정
+[2026-05-26 04:51:06]   [SKIP] Already compliant
+[2026-05-26 04:51:06]   [RESULT] FIXED
+[2026-05-26 04:51:07] [FIX] U-66: 정책에 따른 시스템 로깅 설정
+[2026-05-26 04:51:07]   [SKIP] Already compliant
+[2026-05-26 04:51:07]   [RESULT] FIXED
+[2026-05-26 04:51:08] [FIX] U-67: 로그 디렉터리 소유자 및 권한 설정
+[2026-05-26 04:51:08]   [SKIP] Already compliant
+[2026-05-26 04:51:08]   [RESULT] FIXED
+============================================================
+[2026-05-26 04:51:09] Fix operations completed.
+============================================================
