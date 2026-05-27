@@ -42,6 +42,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <span className="brand-text">
             <span className="brand-name">KDN-VULN</span>
             <span className="brand-sub">취약점 진단 관리</span>
+            <span className="brand-tag">(바이브코딩 과정 실습)</span>
           </span>
         </div>
         <nav className="sidebar-nav">

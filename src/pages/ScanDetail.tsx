@@ -3,7 +3,9 @@ import { Link, useParams } from 'react-router-dom'
 import { db } from '../lib/db'
 import type { Asset, CheckResult, Scan } from '../types'
 import { CHECK_ITEM_MAP, CATEGORY_LABEL } from '../data/checkItems'
+import { downloadScanExcel } from '../lib/exportReport'
 import { ResultBadge, SeverityBadge, ScorePill, Spinner, EmptyState, fmtDate } from '../components/ui'
+import { TrendChart, type TrendPoint } from '../components/TrendChart'
 
 type Filter = 'ALL' | CheckResult
 
@@ -11,6 +13,7 @@ export default function ScanDetail() {
   const { id = '' } = useParams()
   const [scan, setScan] = useState<Scan | null>(null)
   const [asset, setAsset] = useState<Asset | null>(null)
+  const [hostScans, setHostScans] = useState<Scan[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<Filter>('ALL')
   const [open, setOpen] = useState<string | null>(null)
@@ -18,10 +21,21 @@ export default function ScanDetail() {
   useEffect(() => {
     db.getScan(id).then(async (s) => {
       setScan(s)
-      if (s?.assetId) setAsset(await db.getAsset(s.assetId))
+      if (s) {
+        if (s.assetId) setAsset(await db.getAsset(s.assetId))
+        const all = await db.listScans()
+        setHostScans(all.filter((x) => x.hostname.toLowerCase() === s.hostname.toLowerCase()))
+      }
       setLoading(false)
     })
   }, [id])
+
+  // 호스트별 양호율 추이 (오름차순)
+  const trend = useMemo<TrendPoint[]>(() =>
+    [...hostScans]
+      .sort((a, b) => a.scanDate.localeCompare(b.scanDate))
+      .map((s) => ({ label: s.scanDate.slice(5, 10), value: s.score })),
+    [hostScans])
 
   const rows = useMemo(() => {
     if (!scan) return []
@@ -39,7 +53,11 @@ export default function ScanDetail() {
           <h1><i className="fa-solid fa-file-csv" style={{ color: 'var(--primary-light)', marginRight: 8 }} />{scan.hostname}</h1>
           <div className="page-sub">{fmtDate(scan.scanDate)} 점검 · {scan.fileName}</div>
         </div>
-        <Link to="/scans" className="btn btn-secondary"><i className="fa-solid fa-arrow-left" /> 목록</Link>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          <Link to={`/scans/${scan.id}/report`} className="btn btn-primary"><i className="fa-solid fa-file-lines" /> 점검결과서</Link>
+          <button className="btn btn-secondary" onClick={() => downloadScanExcel(scan, asset)}><i className="fa-solid fa-file-excel" /> Excel</button>
+          <Link to="/scans" className="btn btn-secondary"><i className="fa-solid fa-arrow-left" /> 목록</Link>
+        </div>
       </div>
 
       <div className="card card-pad" style={{ marginBottom: 16 }}>
@@ -57,6 +75,13 @@ export default function ScanDetail() {
         <div className="stat-card accent-manual"><span className="stat-label">수동확인 (C)</span><span className="stat-value" style={{ color: 'var(--status-manual)' }}>{scan.manualCount}</span></div>
         <div className="stat-card accent-primary"><span className="stat-label">전체 항목</span><span className="stat-value">{scan.total}</span></div>
       </div>
+
+      {trend.length > 1 && (
+        <div className="card" style={{ marginBottom: 16 }}>
+          <div className="card-head"><h2>이 호스트 양호율 추이</h2><span className="card-sub">{scan.hostname} · 점검 {trend.length}회</span></div>
+          <div className="card-pad"><TrendChart data={trend} unit="%" yMax={100} color="var(--status-good)" height={150} /></div>
+        </div>
+      )}
 
       <div className="card">
         <div className="card-head">

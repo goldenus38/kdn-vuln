@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard'
 import Assets from './pages/Assets'
 import Scans from './pages/Scans'
 import ScanDetail from './pages/ScanDetail'
+import ScanReport from './pages/ScanReport'
 import Fixes from './pages/Fixes'
 import FixDetail from './pages/FixDetail'
 import Vulnerabilities from './pages/Vulnerabilities'
@@ -22,6 +23,7 @@ function AppRoutes() {
         <Route path="/assets" element={<Assets />} />
         <Route path="/scans" element={<Scans />} />
         <Route path="/scans/:id" element={<ScanDetail />} />
+        <Route path="/scans/:id/report" element={<ScanReport />} />
         <Route path="/fixes" element={<Fixes />} />
         <Route path="/fixes/:id" element={<FixDetail />} />
         <Route path="/vulnerabilities" element={<Vulnerabilities />} />

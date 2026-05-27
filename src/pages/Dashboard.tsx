@@ -4,6 +4,7 @@ import { db, latestScanPerAsset } from '../lib/db'
 import type { Asset, FixRun, Scan } from '../types'
 import { CHECK_ITEM_MAP, CATEGORIES, CATEGORY_LABEL } from '../data/checkItems'
 import { ScorePill, Spinner, EmptyState, fmtDate } from '../components/ui'
+import { TrendChart, type TrendPoint } from '../components/TrendChart'
 
 export default function Dashboard() {
   const [assets, setAssets] = useState<Asset[]>([])
@@ -58,6 +59,20 @@ export default function Dashboard() {
   }, [latest])
   const catMax = Math.max(1, ...byCategory.map((c) => c.n))
 
+  // 일자별 평균 양호율 추이
+  const trend = useMemo<TrendPoint[]>(() => {
+    const byDate = new Map<string, { sum: number; n: number }>()
+    for (const s of scans) {
+      const d = s.scanDate.slice(0, 10)
+      const e = byDate.get(d) ?? { sum: 0, n: 0 }
+      e.sum += s.score; e.n += 1
+      byDate.set(d, e)
+    }
+    return [...byDate.entries()]
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .map(([d, e]) => ({ label: d.slice(5), value: Math.round((e.sum / e.n) * 10) / 10 }))
+  }, [scans])
+
   const recent = scans.slice(0, 6)
 
   if (loading) return <Spinner />
@@ -102,6 +117,13 @@ export default function Dashboard() {
           <span className="stat-label">조치 실행</span>
           <span className="stat-value">{fixes.length}</span>
           <span className="stat-meta">조치완료 {fixes.reduce((s, f) => s + f.fixedCount, 0)}건</span>
+        </div>
+      </div>
+
+      <div className="card" style={{ marginBottom: 16 }}>
+        <div className="card-head"><h2>일자별 평균 양호율 추이</h2><span className="card-sub">점검일 기준 · 높을수록 양호</span></div>
+        <div className="card-pad">
+          <TrendChart data={trend} unit="%" yMax={100} color="var(--status-good)" />
         </div>
       </div>
 
