@@ -14,6 +14,8 @@ import Vulnerabilities from './pages/Vulnerabilities'
 import CheckItems from './pages/CheckItems'
 import Notices from './pages/Notices'
 import NoticeDetail from './pages/NoticeDetail'
+import Threats from './pages/Threats'
+import ThreatDetail from './pages/ThreatDetail'
 
 // 로그인 비활성화 (임시) — 인증 게이트 없이 바로 진입
 // 다시 켜려면 user 체크 후 <Login /> 반환하도록 복구 (Login.tsx 보존됨)
@@ -32,6 +34,8 @@ function AppRoutes() {
         <Route path="/items" element={<CheckItems />} />
         <Route path="/notices" element={<Notices />} />
         <Route path="/notices/:id" element={<NoticeDetail />} />
+        <Route path="/threats" element={<Threats />} />
+        <Route path="/threats/:id" element={<ThreatDetail />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Layout>

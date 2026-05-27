@@ -4,13 +4,14 @@
 // 호스팅 확정 후 .env 채우고 supabase/schema.sql 적용하면 자동으로 Supabase 사용.
 // ============================================
 
-import type { Asset, FixRun, Notice, Scan } from '../types'
+import type { Asset, FixRun, Notice, Scan, Threat } from '../types'
 import { supabase, isSupabaseMode } from './supabase'
 
 const LS_ASSETS = 'kdnvuln_assets'
 const LS_SCANS = 'kdnvuln_scans'
 const LS_FIXES = 'kdnvuln_fixes'
 const LS_NOTICES = 'kdnvuln_notices'
+const LS_THREATS = 'kdnvuln_threats'
 
 function uid(): string {
   return (crypto.randomUUID?.() ?? `id-${Date.now()}-${Math.random().toString(36).slice(2)}`)
@@ -85,6 +86,21 @@ function noticeToRow(n: Partial<Notice>) {
   return {
     category: n.category, title: n.title, body: n.body, author: n.author,
     pinned: n.pinned, updated_at: new Date().toISOString(),
+  }
+}
+function threatFromRow(r: any): Threat {
+  return {
+    id: r.id, title: r.title, cve: r.cve ?? '', severity: r.severity,
+    source: r.source ?? '', sourceUrl: r.source_url ?? '', publishedDate: r.published_date ?? '',
+    tags: r.tags ?? [], relatedItems: r.related_items ?? [], body: r.body ?? '',
+    author: r.author ?? '', views: r.views ?? 0, createdAt: r.created_at, updatedAt: r.updated_at,
+  }
+}
+function threatToRow(t: Partial<Threat>) {
+  return {
+    title: t.title, cve: t.cve, severity: t.severity, source: t.source, source_url: t.sourceUrl,
+    published_date: t.publishedDate, tags: t.tags, related_items: t.relatedItems,
+    body: t.body, author: t.author, updated_at: new Date().toISOString(),
   }
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
@@ -299,6 +315,71 @@ export const db = {
     const all = lsRead<Notice>(LS_NOTICES)
     const idx = all.findIndex((n) => n.id === id)
     if (idx >= 0) { all[idx].views = current + 1; lsWrite(LS_NOTICES, all) }
+  },
+
+  // ============================================
+  // Threats (보안 동향 · CVE)
+  // ============================================
+  async listThreats(): Promise<Threat[]> {
+    if (supabase) {
+      const { data, error } = await supabase.from('threats').select('*').order('created_at', { ascending: false })
+      if (error) throw error
+      return (data ?? []).map(threatFromRow)
+    }
+    return lsRead<Threat>(LS_THREATS).sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+  },
+
+  async getThreat(id: string): Promise<Threat | null> {
+    if (supabase) {
+      const { data, error } = await supabase.from('threats').select('*').eq('id', id).maybeSingle()
+      if (error) throw error
+      return data ? threatFromRow(data) : null
+    }
+    return lsRead<Threat>(LS_THREATS).find((t) => t.id === id) ?? null
+  },
+
+  async createThreat(input: Omit<Threat, 'id' | 'views' | 'createdAt' | 'updatedAt'>): Promise<Threat> {
+    if (supabase) {
+      const { data, error } = await supabase.from('threats').insert(threatToRow(input)).select().single()
+      if (error) throw error
+      return threatFromRow(data)
+    }
+    const now = new Date().toISOString()
+    const threat: Threat = { ...input, id: uid(), views: 0, createdAt: now, updatedAt: now }
+    const all = lsRead<Threat>(LS_THREATS)
+    all.push(threat)
+    lsWrite(LS_THREATS, all)
+    return threat
+  },
+
+  async updateThreat(id: string, input: Partial<Threat>): Promise<void> {
+    if (supabase) {
+      const { error } = await supabase.from('threats').update(threatToRow(input)).eq('id', id)
+      if (error) throw error
+      return
+    }
+    const all = lsRead<Threat>(LS_THREATS)
+    const idx = all.findIndex((t) => t.id === id)
+    if (idx >= 0) { all[idx] = { ...all[idx], ...input, updatedAt: new Date().toISOString() }; lsWrite(LS_THREATS, all) }
+  },
+
+  async deleteThreat(id: string): Promise<void> {
+    if (supabase) {
+      const { error } = await supabase.from('threats').delete().eq('id', id)
+      if (error) throw error
+      return
+    }
+    lsWrite(LS_THREATS, lsRead<Threat>(LS_THREATS).filter((t) => t.id !== id))
+  },
+
+  async bumpThreatViews(id: string, current: number): Promise<void> {
+    if (supabase) {
+      await supabase.from('threats').update({ views: current + 1 }).eq('id', id)
+      return
+    }
+    const all = lsRead<Threat>(LS_THREATS)
+    const idx = all.findIndex((t) => t.id === id)
+    if (idx >= 0) { all[idx].views = current + 1; lsWrite(LS_THREATS, all) }
   },
 }
 

@@ -15,6 +15,7 @@ const NAV = [
 
 const BOARD = [
   { to: '/notices', icon: 'fa-bullhorn', label: '공지사항' },
+  { to: '/threats', icon: 'fa-shield-virus', label: '보안 동향·CVE' },
 ]
 
 const TITLES: Record<string, string> = {
@@ -25,6 +26,7 @@ const TITLES: Record<string, string> = {
   '/vulnerabilities': '취약점 현황',
   '/items': '점검 항목 기준',
   '/notices': '보안 공지사항',
+  '/threats': '보안 동향 · CVE',
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {

@@ -75,6 +75,25 @@ create table if not exists public.notices (
 );
 create index if not exists idx_notices_pinned on public.notices (pinned desc, created_at desc);
 
+-- ── 보안 동향 · CVE 게시판 ──
+create table if not exists public.threats (
+  id            uuid primary key default gen_random_uuid(),
+  title         text not null,
+  cve           text default '',
+  severity      text not null default '중간',  -- 긴급/높음/중간/낮음
+  source        text default '',
+  source_url    text default '',
+  published_date text default '',
+  tags          jsonb not null default '[]'::jsonb,
+  related_items jsonb not null default '[]'::jsonb,  -- ['U-01', ...]
+  body          text default '',
+  author        text default '관리자',
+  views         int not null default 0,
+  created_at    timestamptz not null default now(),
+  updated_at    timestamptz not null default now()
+);
+create index if not exists idx_threats_created on public.threats (created_at desc);
+
 -- ============================================================
 -- RLS: 인증된 사용자(로그인한 운영자)만 접근 허용
 -- ============================================================
@@ -82,6 +101,7 @@ alter table public.assets  enable row level security;
 alter table public.scans   enable row level security;
 alter table public.fixes   enable row level security;
 alter table public.notices enable row level security;
+alter table public.threats enable row level security;
 
 drop policy if exists "auth full access - assets" on public.assets;
 create policy "auth full access - assets" on public.assets
@@ -97,6 +117,10 @@ create policy "auth full access - fixes" on public.fixes
 
 drop policy if exists "auth full access - notices" on public.notices;
 create policy "auth full access - notices" on public.notices
+  for all to authenticated using (true) with check (true);
+
+drop policy if exists "auth full access - threats" on public.threats;
+create policy "auth full access - threats" on public.threats
   for all to authenticated using (true) with check (true);
 
 -- 운영자 계정 생성: Supabase 대시보드 > Authentication > Users > Add user

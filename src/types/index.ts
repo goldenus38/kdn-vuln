@@ -127,6 +127,26 @@ export interface Notice {
   updatedAt: string
 }
 
+// ── 보안 동향 · CVE 게시판 ──
+export type CveSeverity = '긴급' | '높음' | '중간' | '낮음'
+
+export interface Threat {
+  id: string
+  title: string
+  cve: string             // 'CVE-2026-1234' (없으면 '')
+  severity: CveSeverity
+  source: string          // KISA / NVD / 벤더 등
+  sourceUrl: string       // 출처 링크
+  publishedDate: string   // 발표일 'YYYY-MM-DD' (없으면 '')
+  tags: string[]
+  relatedItems: string[]  // 관련 점검 항목 ['U-01', ...]
+  body: string
+  author: string
+  views: number
+  createdAt: string
+  updatedAt: string
+}
+
 export interface Toast {
   id: string
   type: 'info' | 'success' | 'error'
