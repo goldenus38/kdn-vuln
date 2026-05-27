@@ -1,20 +1,23 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { db, latestScanPerAsset } from '../lib/db'
-import type { Asset, FixRun, Scan } from '../types'
+import type { Asset, FixRun, Notice, Scan } from '../types'
 import { CHECK_ITEM_MAP, CATEGORIES, CATEGORY_LABEL } from '../data/checkItems'
-import { ScorePill, Spinner, EmptyState, fmtDate } from '../components/ui'
+import { ScorePill, NoticeCategoryBadge, Spinner, EmptyState, fmtDate } from '../components/ui'
 import { TrendChart, type TrendPoint } from '../components/TrendChart'
 
 export default function Dashboard() {
+  const nav = useNavigate()
   const [assets, setAssets] = useState<Asset[]>([])
   const [scans, setScans] = useState<Scan[]>([])
   const [fixes, setFixes] = useState<FixRun[]>([])
+  const [notices, setNotices] = useState<Notice[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    Promise.all([db.listAssets(), db.listScans(), db.listFixes()])
-      .then(([a, s, f]) => { setAssets(a); setScans(s); setFixes(f) })
+    // 공지 테이블 미생성 등으로 실패해도 대시보드는 동작하도록 방어
+    Promise.all([db.listAssets(), db.listScans(), db.listFixes(), db.listNotices().catch(() => [])])
+      .then(([a, s, f, n]) => { setAssets(a); setScans(s); setFixes(f); setNotices(n) })
       .finally(() => setLoading(false))
   }, [])
 
@@ -119,6 +122,25 @@ export default function Dashboard() {
           <span className="stat-meta">조치완료 {fixes.reduce((s, f) => s + f.fixedCount, 0)}건</span>
         </div>
       </div>
+
+      {notices.length > 0 && (
+        <div className="card" style={{ marginBottom: 16 }}>
+          <div className="card-head"><h2><i className="fa-solid fa-bullhorn" style={{ color: 'var(--kdn-red)', marginRight: 8 }} />보안 공지</h2><Link to="/notices" className="card-sub">전체 보기 →</Link></div>
+          <div className="table-wrap">
+            <table className="data-table">
+              <tbody>
+                {notices.slice(0, 4).map((n) => (
+                  <tr key={n.id} className="clickable notice-row" onClick={() => nav(`/notices/${n.id}`)}>
+                    <td style={{ width: 96 }}><NoticeCategoryBadge category={n.category} /></td>
+                    <td className="nt-title">{n.pinned && <i className="fa-solid fa-thumbtack pin" />}{n.title}</td>
+                    <td style={{ width: 130, color: 'var(--text-light)', fontSize: 12.5 }}>{fmtDate(n.createdAt)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       <div className="card" style={{ marginBottom: 16 }}>
         <div className="card-head"><h2>일자별 평균 양호율 추이</h2><span className="card-sub">점검일 기준 · 높을수록 양호</span></div>

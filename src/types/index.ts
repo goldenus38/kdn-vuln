@@ -112,6 +112,21 @@ export interface ParsedFix {
   items: FixItem[]
 }
 
+// ── 보안 공지사항 게시판 ──
+export type NoticeCategory = '긴급' | '점검일정' | '패치권고' | '정책' | '일반'
+
+export interface Notice {
+  id: string
+  category: NoticeCategory
+  title: string
+  body: string
+  author: string
+  pinned: boolean       // 상단 고정
+  views: number
+  createdAt: string
+  updatedAt: string
+}
+
 export interface Toast {
   id: string
   type: 'info' | 'success' | 'error'

@@ -1,4 +1,4 @@
-import type { CheckResult, FixResult, Severity } from '../types'
+import type { CheckResult, FixResult, NoticeCategory, Severity } from '../types'
 
 const RESULT_LABEL: Record<CheckResult, string> = { Y: '양호', N: '취약', C: '수동확인' }
 const RESULT_ICON: Record<CheckResult, string> = {
@@ -32,6 +32,10 @@ export function FixBadge({ result }: { result: FixResult }) {
       {FIX_LABEL[result]}
     </span>
   )
+}
+
+export function NoticeCategoryBadge({ category }: { category: NoticeCategory }) {
+  return <span className={`badge noti-${category}`}>{category === '긴급' && <i className="fa-solid fa-triangle-exclamation" />} {category}</span>
 }
 
 /** 양호율 점수 표시 (높을수록 좋음) */

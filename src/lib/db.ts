@@ -4,12 +4,13 @@
 // 호스팅 확정 후 .env 채우고 supabase/schema.sql 적용하면 자동으로 Supabase 사용.
 // ============================================
 
-import type { Asset, FixRun, Scan } from '../types'
+import type { Asset, FixRun, Notice, Scan } from '../types'
 import { supabase, isSupabaseMode } from './supabase'
 
 const LS_ASSETS = 'kdnvuln_assets'
 const LS_SCANS = 'kdnvuln_scans'
 const LS_FIXES = 'kdnvuln_fixes'
+const LS_NOTICES = 'kdnvuln_notices'
 
 function uid(): string {
   return (crypto.randomUUID?.() ?? `id-${Date.now()}-${Math.random().toString(36).slice(2)}`)
@@ -71,6 +72,19 @@ function fixToRow(f: FixRun) {
     file_name: f.fileName, uploaded_at: f.uploadedAt, items_arg: f.itemsArg,
     total: f.total, fixed_count: f.fixedCount, reported_count: f.reportedCount,
     manual_count: f.manualCount, fail_count: f.failCount, items: f.items,
+  }
+}
+function noticeFromRow(r: any): Notice {
+  return {
+    id: r.id, category: r.category, title: r.title, body: r.body ?? '',
+    author: r.author ?? '', pinned: !!r.pinned, views: r.views ?? 0,
+    createdAt: r.created_at, updatedAt: r.updated_at,
+  }
+}
+function noticeToRow(n: Partial<Notice>) {
+  return {
+    category: n.category, title: n.title, body: n.body, author: n.author,
+    pinned: n.pinned, updated_at: new Date().toISOString(),
   }
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
@@ -217,6 +231,74 @@ export const db = {
       return
     }
     lsWrite(LS_FIXES, lsRead<FixRun>(LS_FIXES).filter((f) => f.id !== id))
+  },
+
+  // ============================================
+  // Notices (보안 공지사항)
+  // ============================================
+  async listNotices(): Promise<Notice[]> {
+    if (supabase) {
+      const { data, error } = await supabase.from('notices')
+        .select('*').order('pinned', { ascending: false }).order('created_at', { ascending: false })
+      if (error) throw error
+      return (data ?? []).map(noticeFromRow)
+    }
+    return lsRead<Notice>(LS_NOTICES).sort((a, b) =>
+      a.pinned === b.pinned ? b.createdAt.localeCompare(a.createdAt) : a.pinned ? -1 : 1)
+  },
+
+  async getNotice(id: string): Promise<Notice | null> {
+    if (supabase) {
+      const { data, error } = await supabase.from('notices').select('*').eq('id', id).maybeSingle()
+      if (error) throw error
+      return data ? noticeFromRow(data) : null
+    }
+    return lsRead<Notice>(LS_NOTICES).find((n) => n.id === id) ?? null
+  },
+
+  async createNotice(input: Omit<Notice, 'id' | 'views' | 'createdAt' | 'updatedAt'>): Promise<Notice> {
+    if (supabase) {
+      const { data, error } = await supabase.from('notices').insert(noticeToRow(input)).select().single()
+      if (error) throw error
+      return noticeFromRow(data)
+    }
+    const now = new Date().toISOString()
+    const notice: Notice = { ...input, id: uid(), views: 0, createdAt: now, updatedAt: now }
+    const all = lsRead<Notice>(LS_NOTICES)
+    all.push(notice)
+    lsWrite(LS_NOTICES, all)
+    return notice
+  },
+
+  async updateNotice(id: string, input: Partial<Notice>): Promise<void> {
+    if (supabase) {
+      const { error } = await supabase.from('notices').update(noticeToRow(input)).eq('id', id)
+      if (error) throw error
+      return
+    }
+    const all = lsRead<Notice>(LS_NOTICES)
+    const idx = all.findIndex((n) => n.id === id)
+    if (idx >= 0) { all[idx] = { ...all[idx], ...input, updatedAt: new Date().toISOString() }; lsWrite(LS_NOTICES, all) }
+  },
+
+  async deleteNotice(id: string): Promise<void> {
+    if (supabase) {
+      const { error } = await supabase.from('notices').delete().eq('id', id)
+      if (error) throw error
+      return
+    }
+    lsWrite(LS_NOTICES, lsRead<Notice>(LS_NOTICES).filter((n) => n.id !== id))
+  },
+
+  /** 조회수 +1 (best-effort) */
+  async bumpNoticeViews(id: string, current: number): Promise<void> {
+    if (supabase) {
+      await supabase.from('notices').update({ views: current + 1 }).eq('id', id)
+      return
+    }
+    const all = lsRead<Notice>(LS_NOTICES)
+    const idx = all.findIndex((n) => n.id === id)
+    if (idx >= 0) { all[idx].views = current + 1; lsWrite(LS_NOTICES, all) }
   },
 }
 

@@ -13,6 +13,10 @@ const NAV = [
   { to: '/items', icon: 'fa-list-check', label: '점검 항목 (U-01~67)' },
 ]
 
+const BOARD = [
+  { to: '/notices', icon: 'fa-bullhorn', label: '공지사항' },
+]
+
 const TITLES: Record<string, string> = {
   '/': '대시보드',
   '/assets': '자산 관리',
@@ -20,6 +24,7 @@ const TITLES: Record<string, string> = {
   '/fixes': '조치 이력',
   '/vulnerabilities': '취약점 현황',
   '/items': '점검 항목 기준',
+  '/notices': '보안 공지사항',
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -52,6 +57,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               key={n.to}
               to={n.to}
               end={n.end}
+              className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+              onClick={() => setOpen(false)}
+            >
+              <i className={`fa-solid ${n.icon}`} />
+              {n.label}
+            </NavLink>
+          ))}
+          <div className="sidebar-section-label">게시판</div>
+          {BOARD.map((n) => (
+            <NavLink
+              key={n.to}
+              to={n.to}
               className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
               onClick={() => setOpen(false)}
             >

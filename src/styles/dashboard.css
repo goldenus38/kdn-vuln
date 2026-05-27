@@ -164,6 +164,22 @@ html[data-theme="dark"] .badge.cat { background: var(--surface-2); }
 .badge.fix-FAIL { background: var(--status-vuln-bg); color: var(--status-vuln); }
 .badge.fix-UNKNOWN { background: var(--navy-100); color: var(--text-light); }
 html[data-theme="dark"] .badge.fix-UNKNOWN { background: var(--surface-2); }
+/* 공지 카테고리 */
+.badge.noti-긴급 { background: var(--status-vuln-bg); color: var(--status-vuln); }
+.badge.noti-점검일정 { background: rgba(61,111,224,0.12); color: var(--primary-light); }
+.badge.noti-패치권고 { background: var(--status-manual-bg); color: var(--status-manual); }
+.badge.noti-정책 { background: rgba(91,44,139,0.12); color: #8B1AC8; }
+.badge.noti-일반 { background: var(--navy-100); color: var(--text-secondary); }
+html[data-theme="dark"] .badge.noti-일반 { background: var(--surface-2); }
+
+/* 공지 목록/본문 */
+.notice-row .nt-title { font-weight: 600; color: var(--text-primary); }
+.notice-row .pin { color: var(--kdn-red); margin-right: 6px; }
+.notice-body { white-space: pre-wrap; word-break: break-word; line-height: 1.8; font-size: 14.5px; color: var(--text-primary); }
+.notice-detail-head { border-bottom: 2px solid var(--border); padding-bottom: 16px; margin-bottom: 18px; }
+.notice-detail-head h1 { font-size: 22px; font-weight: 700; margin: 8px 0 6px; }
+.notice-meta { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12.5px; color: var(--text-light); }
+
 /* 조치 액션 태그 */
 .act-tag {
     display: inline-block; min-width: 62px; text-align: center;

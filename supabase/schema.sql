@@ -61,12 +61,27 @@ create index if not exists idx_fixes_asset on public.fixes (asset_id);
 create index if not exists idx_fixes_hostname on public.fixes (hostname);
 create index if not exists idx_fixes_date on public.fixes (fix_date desc);
 
+-- ── 보안 공지사항 게시판 ──
+create table if not exists public.notices (
+  id          uuid primary key default gen_random_uuid(),
+  category    text not null default '일반',   -- 긴급/점검일정/패치권고/정책/일반
+  title       text not null,
+  body        text default '',
+  author      text default '관리자',
+  pinned      boolean not null default false,
+  views       int not null default 0,
+  created_at  timestamptz not null default now(),
+  updated_at  timestamptz not null default now()
+);
+create index if not exists idx_notices_pinned on public.notices (pinned desc, created_at desc);
+
 -- ============================================================
 -- RLS: 인증된 사용자(로그인한 운영자)만 접근 허용
 -- ============================================================
-alter table public.assets enable row level security;
-alter table public.scans  enable row level security;
-alter table public.fixes  enable row level security;
+alter table public.assets  enable row level security;
+alter table public.scans   enable row level security;
+alter table public.fixes   enable row level security;
+alter table public.notices enable row level security;
 
 drop policy if exists "auth full access - assets" on public.assets;
 create policy "auth full access - assets" on public.assets
@@ -78,6 +93,10 @@ create policy "auth full access - scans" on public.scans
 
 drop policy if exists "auth full access - fixes" on public.fixes;
 create policy "auth full access - fixes" on public.fixes
+  for all to authenticated using (true) with check (true);
+
+drop policy if exists "auth full access - notices" on public.notices;
+create policy "auth full access - notices" on public.notices
   for all to authenticated using (true) with check (true);
 
 -- 운영자 계정 생성: Supabase 대시보드 > Authentication > Users > Add user
