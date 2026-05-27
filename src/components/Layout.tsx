@@ -8,6 +8,7 @@ const NAV = [
   { to: '/', icon: 'fa-gauge-high', label: '대시보드', end: true },
   { to: '/assets', icon: 'fa-server', label: '자산 관리' },
   { to: '/scans', icon: 'fa-file-csv', label: '점검 결과' },
+  { to: '/fixes', icon: 'fa-screwdriver-wrench', label: '조치 이력' },
   { to: '/vulnerabilities', icon: 'fa-shield-halved', label: '취약점 현황' },
   { to: '/items', icon: 'fa-list-check', label: '점검 항목 (U-01~67)' },
 ]
@@ -16,6 +17,7 @@ const TITLES: Record<string, string> = {
   '/': '대시보드',
   '/assets': '자산 관리',
   '/scans': '점검 결과',
+  '/fixes': '조치 이력',
   '/vulnerabilities': '취약점 현황',
   '/items': '점검 항목 기준',
 }

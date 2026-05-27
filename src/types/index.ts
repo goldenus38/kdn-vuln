@@ -68,6 +68,50 @@ export interface ParsedCsv {
   rows: ScanResultRow[]
 }
 
+// ── 조치(fix) ──
+/** 조치 결과 코드 */
+export type FixResult = 'FIXED' | 'REPORTED' | 'MANUAL' | 'FAIL' | 'UNKNOWN'
+
+/** 조치 항목의 상세 액션 1줄 */
+export interface FixActionLine {
+  tag: string        // ACTION/BACKUP/SKIP/WARN/RESULT/MANUAL/REPORT/INFO/FAIL
+  message: string
+  time: string
+}
+
+/** 조치 항목 1건 (U-xx 블록) */
+export interface FixItem {
+  code: string        // 'U-01'
+  title: string       // FIX 헤더 제목
+  result: FixResult
+  actions: FixActionLine[]
+}
+
+/** 조치 실행 세션 1건 (= fix 로그 파일 1개) */
+export interface FixRun {
+  id: string
+  assetId: string | null
+  hostname: string
+  fixDate: string         // 세션 시작 시각
+  fileName: string
+  uploadedAt: string
+  itemsArg: string        // 'Items: ...' (대상 항목)
+  total: number
+  fixedCount: number      // FIXED
+  reportedCount: number   // REPORTED
+  manualCount: number     // MANUAL
+  failCount: number       // FAIL
+  items: FixItem[]
+}
+
+/** fix 로그 파싱 결과 */
+export interface ParsedFix {
+  hostname: string
+  fixDate: string
+  itemsArg: string
+  items: FixItem[]
+}
+
 export interface Toast {
   id: string
   type: 'info' | 'success' | 'error'

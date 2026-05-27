@@ -1,4 +1,4 @@
-import type { CheckResult, Severity } from '../types'
+import type { CheckResult, FixResult, Severity } from '../types'
 
 const RESULT_LABEL: Record<CheckResult, string> = { Y: '양호', N: '취약', C: '수동확인' }
 const RESULT_ICON: Record<CheckResult, string> = {
@@ -16,6 +16,22 @@ export function ResultBadge({ result }: { result: CheckResult }) {
 
 export function SeverityBadge({ severity }: { severity: Severity }) {
   return <span className={`badge sev-${severity}`}>{severity}</span>
+}
+
+const FIX_LABEL: Record<FixResult, string> = {
+  FIXED: '조치완료', REPORTED: '보고', MANUAL: '수동조치', FAIL: '실패', UNKNOWN: '기타',
+}
+const FIX_ICON: Record<FixResult, string> = {
+  FIXED: 'fa-circle-check', REPORTED: 'fa-clipboard-list', MANUAL: 'fa-hand',
+  FAIL: 'fa-circle-xmark', UNKNOWN: 'fa-circle-minus',
+}
+export function FixBadge({ result }: { result: FixResult }) {
+  return (
+    <span className={`badge fix-${result}`}>
+      <i className={`fa-solid ${FIX_ICON[result]}`} />
+      {FIX_LABEL[result]}
+    </span>
+  )
 }
 
 /** 양호율 점수 표시 (높을수록 좋음) */

@@ -156,6 +156,29 @@ table.data-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 html[data-theme="dark"] .badge.sev-하 { background: var(--surface-2); }
 .badge.cat { background: var(--navy-100); color: var(--text-secondary); }
 html[data-theme="dark"] .badge.cat { background: var(--surface-2); }
+/* 조치 결과 */
+.badge.fix-FIXED { background: var(--status-good-bg); color: var(--status-good); }
+.badge.fix-REPORTED { background: rgba(61,111,224,0.12); color: var(--primary-light); }
+.badge.fix-MANUAL { background: var(--status-manual-bg); color: var(--status-manual); }
+.badge.fix-FAIL { background: var(--status-vuln-bg); color: var(--status-vuln); }
+.badge.fix-UNKNOWN { background: var(--navy-100); color: var(--text-light); }
+html[data-theme="dark"] .badge.fix-UNKNOWN { background: var(--surface-2); }
+/* 조치 액션 태그 */
+.act-tag {
+    display: inline-block; min-width: 62px; text-align: center;
+    font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 5px;
+    font-family: ui-monospace, monospace; margin-right: 8px;
+}
+.act-ACTION { background: rgba(61,111,224,0.12); color: var(--primary-light); }
+.act-BACKUP { background: rgba(0,133,90,0.12); color: var(--status-good); }
+.act-SKIP { background: var(--surface-2); color: var(--text-light); }
+.act-WARN, .act-MANUAL, .act-REPORT { background: var(--status-manual-bg); color: var(--status-manual); }
+.act-RESULT { background: var(--status-good-bg); color: var(--status-good); }
+.act-FAIL { background: var(--status-vuln-bg); color: var(--status-vuln); }
+.act-INFO { background: var(--surface-2); color: var(--text-secondary); }
+.act-line { display: flex; align-items: baseline; padding: 4px 0; font-size: 12.5px; border-bottom: 1px dashed var(--border); }
+.act-line:last-child { border-bottom: none; }
+.act-line .act-msg { font-family: ui-monospace, monospace; color: var(--text-secondary); word-break: break-all; }
 
 /* ── Score pill ── */
 .score-pill { display: inline-flex; align-items: baseline; gap: 2px; font-weight: 800; font-size: 15px; }

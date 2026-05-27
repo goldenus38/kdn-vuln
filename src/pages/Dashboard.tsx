@@ -1,18 +1,19 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { db, latestScanPerAsset } from '../lib/db'
-import type { Asset, Scan } from '../types'
+import type { Asset, FixRun, Scan } from '../types'
 import { CHECK_ITEM_MAP, CATEGORIES, CATEGORY_LABEL } from '../data/checkItems'
 import { ScorePill, Spinner, EmptyState, fmtDate } from '../components/ui'
 
 export default function Dashboard() {
   const [assets, setAssets] = useState<Asset[]>([])
   const [scans, setScans] = useState<Scan[]>([])
+  const [fixes, setFixes] = useState<FixRun[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    Promise.all([db.listAssets(), db.listScans()])
-      .then(([a, s]) => { setAssets(a); setScans(s) })
+    Promise.all([db.listAssets(), db.listScans(), db.listFixes()])
+      .then(([a, s, f]) => { setAssets(a); setScans(s); setFixes(f) })
       .finally(() => setLoading(false))
   }, [])
 
@@ -95,6 +96,12 @@ export default function Dashboard() {
           <span className="stat-label">평균 양호율</span>
           <span className="stat-value"><ScorePill score={stats.avgScore} /></span>
           <span className="stat-meta">양호 / (양호+취약)</span>
+        </div>
+        <div className="stat-card accent-primary">
+          <i className="fa-solid fa-screwdriver-wrench stat-icon" />
+          <span className="stat-label">조치 실행</span>
+          <span className="stat-value">{fixes.length}</span>
+          <span className="stat-meta">조치완료 {fixes.reduce((s, f) => s + f.fixedCount, 0)}건</span>
         </div>
       </div>
 

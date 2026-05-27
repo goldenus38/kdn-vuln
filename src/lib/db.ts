@@ -4,11 +4,12 @@
 // 호스팅 확정 후 .env 채우고 supabase/schema.sql 적용하면 자동으로 Supabase 사용.
 // ============================================
 
-import type { Asset, Scan } from '../types'
+import type { Asset, FixRun, Scan } from '../types'
 import { supabase, isSupabaseMode } from './supabase'
 
 const LS_ASSETS = 'kdnvuln_assets'
 const LS_SCANS = 'kdnvuln_scans'
+const LS_FIXES = 'kdnvuln_fixes'
 
 function uid(): string {
   return (crypto.randomUUID?.() ?? `id-${Date.now()}-${Math.random().toString(36).slice(2)}`)
@@ -54,6 +55,22 @@ function scanToRow(s: Scan) {
     file_name: s.fileName, uploaded_at: s.uploadedAt, uploaded_by: s.uploadedBy,
     total: s.total, vuln_count: s.vulnCount, good_count: s.goodCount,
     manual_count: s.manualCount, score: s.score, results: s.results,
+  }
+}
+function fixFromRow(r: any): FixRun {
+  return {
+    id: r.id, assetId: r.asset_id, hostname: r.hostname, fixDate: r.fix_date,
+    fileName: r.file_name, uploadedAt: r.uploaded_at, itemsArg: r.items_arg ?? '',
+    total: r.total, fixedCount: r.fixed_count, reportedCount: r.reported_count,
+    manualCount: r.manual_count, failCount: r.fail_count, items: r.items ?? [],
+  }
+}
+function fixToRow(f: FixRun) {
+  return {
+    id: f.id, asset_id: f.assetId, hostname: f.hostname, fix_date: f.fixDate,
+    file_name: f.fileName, uploaded_at: f.uploadedAt, items_arg: f.itemsArg,
+    total: f.total, fixed_count: f.fixedCount, reported_count: f.reportedCount,
+    manual_count: f.manualCount, fail_count: f.failCount, items: f.items,
   }
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
@@ -158,6 +175,48 @@ export const db = {
       return
     }
     lsWrite(LS_SCANS, lsRead<Scan>(LS_SCANS).filter((s) => s.id !== id))
+  },
+
+  // ============================================
+  // Fixes (조치 이력)
+  // ============================================
+  async listFixes(): Promise<FixRun[]> {
+    if (supabase) {
+      const { data, error } = await supabase.from('fixes').select('*').order('fix_date', { ascending: false })
+      if (error) throw error
+      return (data ?? []).map(fixFromRow)
+    }
+    return lsRead<FixRun>(LS_FIXES).sort((a, b) => b.fixDate.localeCompare(a.fixDate))
+  },
+
+  async getFix(id: string): Promise<FixRun | null> {
+    if (supabase) {
+      const { data, error } = await supabase.from('fixes').select('*').eq('id', id).maybeSingle()
+      if (error) throw error
+      return data ? fixFromRow(data) : null
+    }
+    return lsRead<FixRun>(LS_FIXES).find((f) => f.id === id) ?? null
+  },
+
+  async createFix(fix: FixRun): Promise<FixRun> {
+    if (supabase) {
+      const { data, error } = await supabase.from('fixes').insert(fixToRow(fix)).select().single()
+      if (error) throw error
+      return fixFromRow(data)
+    }
+    const all = lsRead<FixRun>(LS_FIXES)
+    all.push(fix)
+    lsWrite(LS_FIXES, all)
+    return fix
+  },
+
+  async deleteFix(id: string): Promise<void> {
+    if (supabase) {
+      const { error } = await supabase.from('fixes').delete().eq('id', id)
+      if (error) throw error
+      return
+    }
+    lsWrite(LS_FIXES, lsRead<FixRun>(LS_FIXES).filter((f) => f.id !== id))
   },
 }
 
