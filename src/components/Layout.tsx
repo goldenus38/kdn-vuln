@@ -44,7 +44,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <div className="app-shell">
       {open && <div className="sidebar-backdrop" onClick={() => setOpen(false)} />}
       <aside className={`sidebar ${open ? 'open' : ''}`}>
-        <div className="sidebar-brand">
+        <NavLink to="/" className="sidebar-brand" onClick={() => setOpen(false)} title="대시보드로 이동">
           <span className="brand-logo-chip">
             <img src={`${import.meta.env.BASE_URL}kdn-symbol.png`} alt="KDN" />
           </span>
@@ -53,7 +53,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <span className="brand-sub">취약점 진단 관리</span>
             <span className="brand-tag">(바이브코딩 과정 실습)</span>
           </span>
-        </div>
+        </NavLink>
         <nav className="sidebar-nav">
           <div className="sidebar-section-label">메뉴</div>
           {NAV.map((n) => (

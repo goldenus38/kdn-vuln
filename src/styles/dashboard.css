@@ -25,7 +25,9 @@
     gap: 11px;
     padding: 14px 16px;
     border-bottom: 1px solid var(--border);
+    transition: var(--transition-base);
 }
+a.sidebar-brand:hover { background: var(--surface-2); }
 .brand-logo-chip {
     background: #fff;
     border: 1px solid var(--border);
